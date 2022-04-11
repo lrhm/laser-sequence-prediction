@@ -18,7 +18,7 @@ class PLDataLoader(LightningDataModule):
         self.data_dir = data_dir
         self.batch_size = batch_size
 
-    def setup(self):
+    def setup(self, stage=None):
         raw_data = t.load(self.data_dir)
         frames = t.stack(
             tuple(

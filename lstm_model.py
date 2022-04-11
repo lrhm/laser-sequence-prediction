@@ -1,6 +1,7 @@
 
 import torch as t
 import pytorch_lightning as pl
+import ipdb
 
 class VanillaLSTM(t.nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
@@ -23,14 +24,15 @@ class VanillaLSTM(t.nn.Module):
 
 
 # VanillaLSTM pytorch lightning module
-class VanillaLSTMModule(pl.module.LightningModule):
+class VanillaLSTMModule(pl.LightningModule):
     def __init__(self, hparams):
         super().__init__()
-        self.hparams = hparams
+        self.params = hparams
+        # ipdb.set_trace()
         self.lstm = VanillaLSTM(
-            input_size=self.hparams.input_size,
-            hidden_size=self.hparams.hidden_size,
-            output_size=self.hparams.output_size,
+            input_size=hparams['input_size'],
+            hidden_size= hparams['hidden_size'],
+            output_size= hparams['output_size'],
         )
         self.loss_fn = t.nn.MSELoss()
 
@@ -54,7 +56,7 @@ class VanillaLSTMModule(pl.module.LightningModule):
         return {"val_loss": avg_loss}
 
     def configure_optimizers(self):
-        return t.optim.Adam(self.parameters(), lr=self.hparams.lr)
+        return t.optim.Adam(self.parameters(), lr=self.params['lr'])
 
     def train_dataloader(self):
         return self.train_dataloader

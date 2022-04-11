@@ -5,8 +5,8 @@ from pytorch_lightning import Trainer
 def main():
     # training settings
     hparams = {
-        "input_size": 1,
-        "hidden_size": 32,
+        "input_size": 10,
+        "hidden_size": 10,
         "output_size": 1,
         "lr": 0.01,
     }

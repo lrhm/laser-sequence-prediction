@@ -20,22 +20,18 @@ class PLDataLoader(LightningDataModule):
 
     def setup(self, stage=None):
         raw_data = t.load(self.data_dir)
-        frames = t.stack(
-            tuple(
-                raw_data[i : i + self.seq_size]
-                for i in range(len(raw_data) - self.seq_size)
-            )
+        frames = tuple(
+            (raw_data[i : i + self.seq_size], raw_data[i + self.seq_size + 1])
+            for i in range(len(raw_data) - self.seq_size - 1)
         )
-        frames = frames[t.randperm(len(frames))]
-        train_data = frames[: int(t.floor(t.tensor(frames.shape[0] * 0.8)))]
-        test_data = frames[int(t.floor(t.tensor(frames.shape[0] * 0.2))) :]
-        self.train_dataset = TensorDataset(train_data)
-        self.test_dataset = TensorDataset(test_data)
-        """
-        self.mnist_train, self.mnist_val = random_split(
-            mnist_full, [55000, 5000]
-        )
-        """
+        xs = t.stack(tuple(frame[0] for frame in frames))
+        ys = t.stack(tuple(frame[1] for frame in frames))
+        train_xs = xs[: int(t.floor(t.tensor(xs.shape[0] * 0.8)))]
+        train_ys = ys[: int(t.floor(t.tensor(xs.shape[0] * 0.8)))]
+        test_xs = xs[int(t.floor(t.tensor(xs.shape[0] * 0.2))) :]
+        test_ys = ys[int(t.floor(t.tensor(xs.shape[0] * 0.2))) :]
+        self.train_dataset = TensorDataset(train_xs, train_ys)
+        self.test_dataset = TensorDataset(test_xs, test_ys)
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size)
@@ -51,7 +47,8 @@ def main():
     loader = PLDataLoader()
     loader.setup()
     train = loader.train_dataloader()
-    for d in tqdm(train):
+    for x, y in tqdm(train):
+        ipdb.set_trace()
         pass
 
 

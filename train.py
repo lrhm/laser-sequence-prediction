@@ -1,6 +1,7 @@
 from data_loader import PLDataLoader
 from lstm_model import VanillaLSTMModule
 from pytorch_lightning import Trainer
+from pytorch_lightning.loggers import TensorBoardLogger
 
 def main():
     # training settings
@@ -10,8 +11,6 @@ def main():
         "output_size": 1,
         "lr": 0.01,
     }
-
-
     # instantiate model
     model = VanillaLSTMModule(hparams)
 
@@ -19,8 +18,9 @@ def main():
     loader = PLDataLoader()
     loader.setup()
 
+    logger = TensorBoardLogger('logs', name='vanilla_lstm')
     # train model
-    trainer = Trainer(max_epochs=10)
+    trainer = Trainer(logger, max_epochs=10)
     trainer.fit(model, loader)
 
 if __name__ == '__main__':

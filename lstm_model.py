@@ -1,6 +1,6 @@
 
 import torch as t
-
+import pytorch_lightning as pl
 
 class VanillaLSTM(t.nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
@@ -20,3 +20,53 @@ class VanillaLSTM(t.nn.Module):
         return t.autograd.Variable(t.zeros(1, 1, self.hidden_size))
 
 
+
+
+# VanillaLSTM pytorch lightning module
+class VanillaLSTMModule(pl.module.LightningModule):
+    def __init__(self, hparams):
+        super().__init__()
+        self.hparams = hparams
+        self.lstm = VanillaLSTM(
+            input_size=self.hparams.input_size,
+            hidden_size=self.hparams.hidden_size,
+            output_size=self.hparams.output_size,
+        )
+        self.loss_fn = t.nn.MSELoss()
+
+    def forward(self, x):
+        return self.lstm(x)
+
+    def training_step(self, batch, batch_idx):
+        x, y = batch
+        y_pred, _ = self.forward(x)
+        loss = self.loss_fn(y_pred, y)
+        return {"loss": loss}
+
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        y_pred, _ = self.forward(x)
+        loss = self.loss_fn(y_pred, y)
+        return {"val_loss": loss}
+
+    def validation_epoch_end(self, outputs):
+        avg_loss = t.stack([x["val_loss"] for x in outputs]).mean()
+        return {"val_loss": avg_loss}
+
+    def configure_optimizers(self):
+        return t.optim.Adam(self.parameters(), lr=self.hparams.lr)
+
+    def train_dataloader(self):
+        return self.train_dataloader
+
+    def val_dataloader(self):
+        return self.val_dataloader
+
+    def test_dataloader(self):
+        return self.test_dataloader
+
+    def on_epoch_end(self):
+        pass
+
+    def on_train_end(self):
+        pass

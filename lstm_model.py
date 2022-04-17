@@ -15,7 +15,7 @@ class VanillaLSTM(t.nn.Module):
         output, _ = self.lstm(input)
         # tanh on output
         output = self.act(output)
-        return output[:,-1]
+        return output
 
     def init_hidden(self):
         return t.autograd.Variable(t.zeros(1, 1, self.hidden_size))
@@ -42,13 +42,14 @@ class VanillaLSTMModule(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = batch
+        y = y.T.unsqueeze(2)
         y_pred = self.forward(x)
         loss = self.loss_fn(y_pred, y)
-
         return {"loss": loss}
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
+        y = y.T.unsqueeze(2)
         y_pred = self.forward(x)
         loss = self.loss_fn(y_pred, y)
         return {"val_loss": loss}
@@ -81,10 +82,11 @@ class VanillaLSTMModule(pl.LightningModule):
         return super().validation_epoch_end(outputs)
 
     def forward(self, input):
+        input = input.T.unsqueeze(2)
         output = self.lstm(input)
         # tanh on output
         output = self.act(output)
-        return output[-1]
+        return output
 
     def init_hidden(self):
         return t.autograd.Variable(t.zeros(1, 1, self.hidden_size))

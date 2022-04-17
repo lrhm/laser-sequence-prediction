@@ -6,8 +6,8 @@ from pytorch_lightning.loggers import TensorBoardLogger
 def main():
     # training settings
     hparams = {
-        "input_size": 10,
-        "hidden_size": 10,
+        "input_size": 1,
+        "hidden_size": 1,
         "output_size": 1,
         "lr": 0.01,
     }

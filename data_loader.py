@@ -21,7 +21,7 @@ class PLDataLoader(LightningDataModule):
     def setup(self, stage=None):
         raw_data = t.load(self.data_dir)
         frames = tuple(
-            (raw_data[i : i + self.seq_size], raw_data[i + self.seq_size + 1])
+            (raw_data[i : i + self.seq_size], raw_data[i + 1 : i + self.seq_size + 1])
             for i in range(len(raw_data) - self.seq_size - 1)
         )
         xs = t.stack(tuple(frame[0] for frame in frames))

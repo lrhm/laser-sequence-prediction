@@ -28,9 +28,8 @@ class PLDataLoader(LightningDataModule):
         ys = t.stack(tuple(frame[1] for frame in frames))
         train_xs = xs[: int(t.floor(t.tensor(xs.shape[0] * 0.8)))]
         train_ys = ys[: int(t.floor(t.tensor(xs.shape[0] * 0.8)))]
-        test_xs = xs[int(t.floor(t.tensor(xs.shape[0] * 0.2))) :]
-        test_ys = ys[int(t.floor(t.tensor(xs.shape[0] * 0.2))) :]
-        ipdb.set_trace()
+        test_xs = xs[int(t.floor(t.tensor(xs.shape[0] * 0.8))) :]
+        test_ys = ys[int(t.floor(t.tensor(xs.shape[0] * 0.8))) :]
         self.train_dataset = TensorDataset(train_xs, train_ys)
         self.test_dataset = TensorDataset(test_xs, test_ys)
 
